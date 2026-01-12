@@ -36,6 +36,10 @@ public class CapacityToShipPackagewithinDDays {
             if(currentWeight + weight > capacity){
                 daysNeeded ++;
                 currentWeight = weight;
+
+                if(daysNeeded > days){
+                    return false;
+                }
             }
             else{
                 currentWeight += weight;
