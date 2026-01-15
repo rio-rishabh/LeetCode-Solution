@@ -58,7 +58,7 @@ public class LinkedListCycle2 {
                 slow2 = slow2.next;
                 fast = fast.next;
             }
-            return slow;
+            return slow2;
         }
         public static void main(String[] args){
             ListNode list1 = createCycle(new int[]{3,2,0,-4}, 1);
