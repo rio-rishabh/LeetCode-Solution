@@ -67,6 +67,7 @@ public class LinkedListCycle2 {
             System.out.println("List [1,2,3,4] no cycle: " + detectCycle(list2));
             ListNode list3 = createCycle(new int[]{1}, 0);
             System.out.println("List [1] cycle at 0: " + detectCycle(list3));
+            
         }
 
     }
