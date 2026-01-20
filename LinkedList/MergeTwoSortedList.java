@@ -53,7 +53,7 @@ public class MergeTwoSortedList {
     }
 
     public static void main(String args[]){
-        ListNode list1 = of(1,2,4);
+        ListNode list1 = of(1);
         ListNode list2 = of(1,3,4);
         ListNode mergedList = mergeTwoSortedList(list1, list2);
         System.out.println("Merged list:");
