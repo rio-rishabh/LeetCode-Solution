@@ -38,6 +38,6 @@ public class PostOrderTraversal {
         root.right.left = new TreeNode(5);
         root.right.right = new TreeNode(7);
         List<Integer> result = postOrderTraversal(root);
+        System.out.println("Postorder traversal: " + result);
     }
-    System.out.println("Postorder traversal: " + result);
 }
