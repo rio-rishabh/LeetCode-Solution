@@ -22,11 +22,11 @@ public class InvertBinaryTree {
          return root;
     }
 
-    static void printTree(TreeNode root){
+    static void printTreeInOrder(TreeNode root){
         if(root == null){return;}
+        printTreeInOrder(root.left);
         System.out.print(root.val + " ");
-        printTree(root.left);
-        printTree(root.right);
+        printTreeInOrder(root.right);
     }
     public static void main(String args[]){
         TreeNode root = new TreeNode(4);
