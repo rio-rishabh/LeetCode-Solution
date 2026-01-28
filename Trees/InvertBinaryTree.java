@@ -38,5 +38,13 @@ public class InvertBinaryTree {
         root.right.right = new TreeNode(9);
         TreeNode result = invertTree(root);
         System.out.println("Inverted tree: " + result);
+        System.out.println("Origina Tree In Order: ");
+        printTreeInOrder(root);
+        System.out.println();
+
+        invertTree(root);
+        System.out.println("Inverted Tree In Order: ");
+        printTreeInOrder(root);
+        System.out.println();
     }
 }
