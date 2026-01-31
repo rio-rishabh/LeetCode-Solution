@@ -11,8 +11,8 @@ public class KthSmallestElement {
         }
     }
 
-    int count = 0;
-    int result = 0;
+    static int count = 0;
+    static int result = 0;
     public static int kthSmallest(TreeNode root, int k){
         count = 0;
         result = 0;
@@ -39,7 +39,7 @@ public class KthSmallestElement {
         root.left = new TreeNode(1);
         root.right = new TreeNode(4);
         root.left.right = new TreeNode(2);
-        int k = 2;
+        int k = 3;
         int result = kthSmallest(root, k);
         System.out.println("The kth smallest element is: " + result);
     }
