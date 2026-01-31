@@ -17,11 +17,11 @@ public class LowestCommonAncestorInBST {
         }
 
         if(root.val > p.val && root.val > q.val){
-            return lowestCommonAncestorInBST(root.right, p, q);   
+            return lowestCommonAncestorInBST(root.left, p, q);   
         }
 
         if(root.val < p.val && root.val < q.val){
-            return lowestCommonAncestorInBST(root.left, p, q);
+            return lowestCommonAncestorInBST(root.right, p, q);
         }
 
         return root;
@@ -35,8 +35,8 @@ public class LowestCommonAncestorInBST {
         root.left.right = new TreeNode(4);
         root.right.left = new TreeNode(7);
         root.right.right = new TreeNode(9);
-    TreeNode p = root.left;
-    TreeNode q = root.right;
+    TreeNode p = root.left.left;
+    TreeNode q = root.left.right;
     TreeNode result = lowestCommonAncestorInBST(root, p, q);
     System.out.println("The lowest common ancestor is: " + result.val);
 }
