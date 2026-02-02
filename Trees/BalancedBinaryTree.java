@@ -10,12 +10,9 @@ public class BalancedBinaryTree {
             this.val = val;
         }
     }
-    static int diameter = 0;
 
     public static boolean isBalanced(TreeNode root){
-        diameter = 0;
-        isBalancedHelper(root);
-        return diameter <=1;
+        return isBalancedHelper(root) != -1;
     }
 
     public static int isBalancedHelper(TreeNode root){
