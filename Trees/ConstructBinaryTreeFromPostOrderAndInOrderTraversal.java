@@ -1,6 +1,6 @@
 package Trees;
 import java.util.HashMap;
-public class ConstructuBinaryTreeFromPostOrderAndInOrderTraversal {
+public class ConstructBinaryTreeFromPostOrderAndInOrderTraversal {
     public static class TreeNode{
         int val;
         TreeNode left;
