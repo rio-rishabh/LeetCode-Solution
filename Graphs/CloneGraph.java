@@ -26,13 +26,16 @@ public class CloneGraph {
         }
     }
 
+    static Map<Node, Node> nodeMap = new HashMap<>();
     public static Node cloneGraph(Node node){
         if(node == null){
             return null;
         }
+        nodeMap.clear();
+        return cloneGraphHelper(node);
+    }
 
-        Map<Node, Node> nodeMap = new HashMap<>();
-
+    public static Node cloneGraphHelper(Node node){
         if(nodeMap.containsKey(node)){
             return nodeMap.get(node);
         }
@@ -42,7 +45,7 @@ public class CloneGraph {
         nodeMap.put(node,clone);
 
         for(Node neighbor : node.neighbors){
-            clone.neighbors.add(cloneGraph(neighbor));
+            clone.neighbors.add(cloneGraphHelper(neighbor));
         }
         return clone;
     }
