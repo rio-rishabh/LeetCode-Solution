@@ -3,19 +3,22 @@ package Graphs;
 import java.util.List;  
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class CloneGraph {
     public static class Node{
         int val;
         List<Node> neighbors;
 
-        Node(int val){
-            this.val = val;
-        }
+       Node(){
+        val = 0;
+        neighbors = new ArrayList<>();
+       }
 
-        Node(List<Node> neighbors){
-            this.neighbors = neighbors;
-        }
+       Node(int val){
+        this.val = val;
+        this.neighbors = new ArrayList<>();
+       }
 
         Node(int val, List<Node>neighbors){
             this.val = val;
