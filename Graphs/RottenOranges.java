@@ -53,6 +53,6 @@ public class RottenOranges {
     public static void main(String args[]){
         int grid[][] = {{2,1,1},{1,1,0},{0,1,1}};
         int result = orangesRotting(grid);
-        System.out.println("Time taken to rot all oranges: " + result);
+        System.out.println("Time taken to rot all oranges: " + result + " minutes");
     }
 }
