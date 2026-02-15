@@ -17,6 +17,7 @@ public class CourseSchedule2 {
 
         state = new int[numCourses];
         graph = new ArrayList<>();
+        result = new ArrayList<>();
 
         for(int i = 0 ; i < numCourses ; i++){
             graph.add(new ArrayList<>());
