@@ -11,7 +11,7 @@ public class CourseSchedule2 {
     static List<Integer> result;
 
     public static int[] findOrder(int numCourses, int prerequisities[][]){
-        if(numCourses <= 0 || prerequisities == null || prerequisities.length ==0){
+        if(numCourses <= 0 || prerequisities == null){
             return new int[0];
         }
 
@@ -61,8 +61,8 @@ public class CourseSchedule2 {
     }
 
     public static void main(String args[]){
-        int prerequisities[][] = {{1,0},{2,0},{3,1},{3,2}};
-        int numCourses = 4;
+        int prerequisities[][] = {};
+        int numCourses = 1;
         int result[] = findOrder(numCourses, prerequisities);
         System.out.println("Course order: " + Arrays.toString(result));
     }
