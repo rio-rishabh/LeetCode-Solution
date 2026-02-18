@@ -35,5 +35,37 @@ public class NetworkDelayTime {
             int curr[] = pq.poll();
             int d = curr[0]; // take the smallest distance from the source node to the current node.
             int u = curr[1]; // take the node with the smallest distance from the source node.
+
+            if(d > dist[u]){
+                continue;
+            } // this is to avoid the nodes that are already visited and present one has shorter distance from the source node.
+
+            for(int []  e :  adj.get(u)){
+                int v = e[0];
+                int w = e[1];
+                int newDist = dist[u] + w;
+
+                if(newDist < dist[v]){
+                    dist[v] = newDist;
+                    pq.offer(new int[]{newDist, v});
+                }
+            }
         }
+
+        int max = 0;
+        for(int i = 1 ; i<= n; i++){
+            if(dist[i] == Integer.MAX_VALUE){return -1;}
+            max = Math.max(max, dist[i]);
+        }
+        return max;
+    }   
+
+
+    public static void main(String args[]){
+        int times[][] = {{2,1,1},{2,3,1},{3,4,1}};
+        int n = 4;
+        int k = 2;
+        int result = networkDelayTime(times, n, k);
+        System.out.println("The time taken to reach all nodes is: " + result);
+    }
 }
