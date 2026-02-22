@@ -21,7 +21,7 @@ public class TopKFrequentElement {
             if(pq.size() < k){
                 pq.offer(num);
             }
-            else if(num > pq.peek()){
+            else if(frequencyMap.get(num) > frequencyMap.get(pq.peek())){
                 pq.poll();
                 pq.offer(num);
             }
