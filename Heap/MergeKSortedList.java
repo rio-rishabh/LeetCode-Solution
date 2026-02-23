@@ -2,7 +2,7 @@ package Heap;
 
 import java.util.PriorityQueue;
 public class MergeKSortedList {
-    public class ListNode{
+    public static class ListNode{
         int val;
         ListNode next;
         ListNode(int val){
@@ -26,7 +26,7 @@ public class MergeKSortedList {
             return null;
         }
 
-        PriorityQueue<ListNode> pq = new PriorityQueue((a, b) -> a.val - b.val);
+        PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> a.val - b.val);
 
         for(ListNode list : lists){
             if(list != null){
