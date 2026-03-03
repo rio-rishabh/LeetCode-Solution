@@ -34,6 +34,15 @@ public class MedianFromDataStream {
         medianFromDataStream.addNum(1);
         medianFromDataStream.addNum(2);
         medianFromDataStream.addNum(3);
+        medianFromDataStream.addNum(4);
+        System.out.println("Median is: " + medianFromDataStream.findMedian());
+        medianFromDataStream.addNum(5);
+        System.out.println("Median is: " + medianFromDataStream.findMedian());
+        medianFromDataStream.addNum(6);
+        System.out.println("Median is: " + medianFromDataStream.findMedian());
+        medianFromDataStream.addNum(7);
+        System.out.println("Median is: " + medianFromDataStream.findMedian());
+        medianFromDataStream.addNum(8);
         System.out.println("Median is: " + medianFromDataStream.findMedian());
     }
 }
