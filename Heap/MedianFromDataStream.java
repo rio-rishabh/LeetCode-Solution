@@ -22,7 +22,7 @@ public class MedianFromDataStream {
 
     public double findMedian(){
         if(maxHeap.size() == minHeap.size()){
-            return (maxHeap.peek() + minHeap.peek()) / 2;
+            return ((double) (maxHeap.peek() + minHeap.peek()) / 2);
         }
         else{
             return maxHeap.peek();
