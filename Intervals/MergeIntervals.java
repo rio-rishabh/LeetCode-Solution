@@ -35,5 +35,4 @@ public class MergeIntervals {
             System.out.println(result[i][0] + " " + result[i][1]);
         }
     }
-    
 }
