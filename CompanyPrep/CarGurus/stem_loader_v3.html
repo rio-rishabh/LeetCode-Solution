@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SR1 Learn — Loading</title>
+</head>
+<body>
+
+  <div class="screen" role="main">
+
+    <div class="top-bar">
+      <span class="badge">SR1 Learn</span>
+      <span class="status" id="status">Initializing...</span>
+    </div>
+
+    <div class="ring-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar" aria-label="Video loading progress">
+      <svg viewBox="0 0 110 110" aria-hidden="true">
+        <circle class="ring-bg" cx="55" cy="55" r="47"/>
+        <circle class="ring-fill" id="ring" cx="55" cy="55" r="47"/>
+      </svg>
+      <div class="ring-label">
+        <span id="pct">0%</span>
+        <small>loading</small>
+      </div>
+    </div>
+
+    <div class="fact-box" aria-live="polite" aria-atomic="true">
+      <p class="eyebrow">Did you know?</p>
+      <p id="fact">Loading a fact...</p>
+      <span class="tag" id="tag"></span>
+    </div>
+
+    <div class="quiz-box">
+      <p class="quiz-q" id="quiz-q" aria-live="polite"></p>
+      <div class="options" id="options" role="group" aria-label="Answer choices"></div>
+      <p class="feedback" id="feedback" aria-live="assertive" aria-atomic="true"></p>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" id="prev" aria-label="Previous question">&#8592; Prev</button>
+      <div class="dots" id="dots" role="tablist" aria-label="Jump to question"></div>
+      <button class="nav-btn" id="next" aria-label="Next question">Next &#8594;</button>
+    </div>
+
+    <p class="hint">Click any dot or use arrows to jump to any question as you like</p>
+
+  </div>
+
+
+// CSS STYLES HERE //
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: monospace;
+      background: #0d0d1c;
+      color: #c8c4e8;
+    }
+
+
+    .screen {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+   
+
+    .badge {
+      background: #1a1730;
+      color: #a89cf7;
+      border: 1px solid #2e2860;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .status {
+      font-size: 11px;
+      color: #44445a;
+      letter-spacing: 1px;
+    }
+
+    .ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .ring-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: #1e1e38;
+      stroke-width: 8;
+    }
+
+    .ring-fill {
+      fill: none;
+      stroke: #7c6ff7;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 295;
+      stroke-dashoffset: 295;
+      transition: stroke-dashoffset 0.8s linear;
+    }
+
+    .ring-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .ring-label span {
+      font-size: 20px;
+      color: #a89cf7;
+    }
+
+    .ring-label small {
+      font-size: 10px;
+      color: #44445a;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+
+    .fact-box {
+      width: 100%;
+      background: #111126;
+      border: 1px solid #23234a;
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      color: #7c6ff7;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    #fact {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #c8c4e8;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 11px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: #1a1730;
+      color: #a89cf7;
+    }
+
+
+
+    .quiz-box {
+      width: 100%;
+      background: #111126;
+      border: 1px solid #23234a;
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .quiz-q {
+      font-size: 13px;
+      color: #c8c4e8;
+      margin-bottom: 12px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .options button {
+      background: #0d0d1c;
+      color: #9b98c4;
+      border: 1px solid #2e2860;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: monospace;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .options button:hover:not(:disabled) {
+      border-color: #7c6ff7;
+      color: #c8c4e8;
+    }
+
+    .options button:disabled {
+      cursor: default;
+    }
+
+    .options button.correct {
+      border-color: #7ec87e;
+      color: #7ec87e;
+      background: #0f1f0f;
+    }
+
+    .options button.wrong {
+      border-color: #e8746f;
+      color: #e8746f;
+      background: #1f0f0f;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-size: 12px;
+      min-height: 16px;
+    }
+
+    /* ---------- navigation ---------- */
+
+    .nav-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      background: #1a1730;
+      color: #a89cf7;
+      border: 1px solid #2e2860;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-family: monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: #2e2860;
+      color: #fff;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+
+
+    .dots {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1e1e38;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .dot:hover {
+      transform: scale(1.4);
+      background: #534ab7;
+    }
+
+    .dot.active {
+      background: #7c6ff7;
+      transform: scale(1.3);
+      border-color: #a89cf7;
+    }
+
+    .dot.done {
+      background: #44445a;
+    }
+
+    .dot.answered {
+      background: #7ec87e;
+    }
+
+
+    .hint {
+      font-size: 11px;
+      color: #33334a;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+
+
+    @media (max-width: 480px) {
+      .screen { padding: 1rem; }
+      .options { grid-template-columns: 1fr; }
+      .ring-wrap { width: 90px; height: 90px; }
+      .ring-label span { font-size: 16px; }
+    }
+
+
+
+    @media (prefers-reduced-motion: reduce) {
+      .ring-fill { transition: none; }
+      * { animation: none !important; transition: none !important; }
+    }
+
+  </style>
+
+
+  <script>
+
+  
+
+    const facts = [
+      {
+        text: "Python was named after Monty Python, not the snake!",
+        tag: "Python",
+        q: "What is Python named after?",
+        opts: ["A snake", "Monty Python", "A math term", "A Greek god"],
+        ans: 1
+      },
+      {
+        text: "The first computer bug was a real moth found by Grace Hopper in 1947.",
+        tag: "CS History",
+        q: "Who found the first real computer bug?",
+        opts: ["Alan Turing", "Bill Gates", "Grace Hopper", "Ada Lovelace"],
+        ans: 2
+      },
+      {
+        text: "Zero was invented in India around 500 AD. Without it, binary code couldn't exist.",
+        tag: "Math",
+        q: "What number system do computers use?",
+        opts: ["Decimal", "Binary", "Hexadecimal", "Octal"],
+        ans: 1
+      },
+      {
+        text: "Ada Lovelace wrote the first algorithm in the 1840s — 100 years before computers existed.",
+        tag: "CS History",
+        q: "Ada Lovelace is known as the first what?",
+        opts: ["Electrical engineer", "Computer programmer", "Mathematician", "Hardware designer"],
+        ans: 1
+      },
+    ];
+
+ 
+    const TOTAL         = 60000;
+    const CIRC          = 295;
+    const FACT_DURATION = TOTAL / facts.length;
+    const statuses      = ["Initializing...", "Connecting...", "Fetching stream...", "Buffering...", "Almost there...", "Ready!"];
+
+
+    let start       = null;
+    let currentFact = 0;
+    let statusIdx   = 0;
+    let answered    = new Set();
+    let manualMode  = false;
+
+
+
+    const ring        = document.getElementById('ring');
+    const pctEl       = document.getElementById('pct');
+    const factEl      = document.getElementById('fact');
+    const tagEl       = document.getElementById('tag');
+    const quizQ       = document.getElementById('quiz-q');
+    const options     = document.getElementById('options');
+    const feedback    = document.getElementById('feedback');
+    const statusEl    = document.getElementById('status');
+    const dotsEl      = document.getElementById('dots');
+    const prevBtn     = document.getElementById('prev');
+    const nextBtn     = document.getElementById('next');
+    const progressBar = document.getElementById('progressBar');
+
+
+
+    facts.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot';
+      d.id = 'dot' + i;
+      d.title = 'Question ' + (i + 1);
+      d.setAttribute('role', 'tab');
+      d.setAttribute('tabindex', '0');
+      d.setAttribute('aria-label', 'Go to question ' + (i + 1));
+      d.onclick = () => goTo(i);
+      d.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') goTo(i); };
+      dotsEl.appendChild(d);
+    });
+
+
+    prevBtn.onclick = () => goTo(currentFact - 1);
+    nextBtn.onclick = () => goTo(currentFact + 1);
+
+
+    function showFact(i) {
+      currentFact = i;
+      const f = facts[i];
+
+      factEl.textContent   = f.text;
+      tagEl.textContent    = '#' + f.tag;
+      quizQ.textContent    = 'Question ' + (i + 1) + ' of ' + facts.length + ': ' + f.q;
+      feedback.textContent = '';
+      feedback.style.color = '';
+      options.innerHTML    = '';
+
+      f.opts.forEach((opt, j) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.setAttribute('aria-label', 'Option ' + (j + 1) + ': ' + opt);
+
+        if (answered.has(i)) {
+          btn.disabled = true;
+          if (j === f.ans) {
+            btn.classList.add('correct');
+            feedback.textContent = 'You got this one right!';
+            feedback.style.color = '#7ec87e';
+          }
+        } else {
+          btn.onclick = () => answer(i, j, f.ans, btn);
+        }
+
+        options.appendChild(btn);
+      });
+
+      updateDots();
+      updateNavButtons();
+    }
+
+    function answer(factI, chosen, correct, btn) {
+      if (answered.has(factI)) return;
+      answered.add(factI);
+
+      const allBtns = options.querySelectorAll('button');
+      allBtns.forEach(b => b.disabled = true);
+
+      if (chosen === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct! Well done.';
+        feedback.style.color = '#7ec87e';
+      } else {
+        btn.classList.add('wrong');
+        allBtns[correct].classList.add('correct');
+        feedback.textContent = 'Not quite — correct answer is highlighted.';
+        feedback.style.color = '#e8746f';
+      }
+
+      updateDots();
+    }
+
+    function goTo(i) {
+      if (i < 0 || i >= facts.length) return;
+      manualMode = true;
+      showFact(i);
+    }
+
+    function updateDots() {
+      facts.forEach((_, i) => {
+        const d = document.getElementById('dot' + i);
+        if (!d) return;
+        d.className = 'dot';
+        if (answered.has(i)) d.classList.add('answered');
+        if (i === currentFact)  d.classList.add('active');
+      });
+    }
+
+    function updateNavButtons() {
+      prevBtn.disabled = currentFact === 0;
+      nextBtn.disabled = currentFact === facts.length - 1;
+    }
+
+    function tick(ts) {
+      if (!start) start = ts;
+      const elapsed = Math.min(ts - start, TOTAL);
+      const pct     = elapsed / TOTAL;
+      const pctInt  = Math.round(pct * 100);
+
+      ring.style.strokeDashoffset = CIRC * (1 - pct);
+      pctEl.textContent = pctInt + '%';
+      progressBar.setAttribute('aria-valuenow', pctInt);
+
+      if (!manualMode) {
+        const fi = Math.min(Math.floor(elapsed / FACT_DURATION), facts.length - 1);
+        if (fi !== currentFact) showFact(fi);
+      }
+
+      const si = Math.min(Math.floor(pct * statuses.length), statuses.length - 1);
+      if (si !== statusIdx) {
+        statusIdx = si;
+        statusEl.textContent = statuses[si];
+        if (si === statuses.length - 1) {
+          statusEl.style.color = '#7ec87e';
+          ring.style.stroke    = '#7ec87e';
+          pctEl.style.color    = '#7ec87e';
+        }
+      }
+
+      if (elapsed < TOTAL) requestAnimationFrame(tick);
+    }
+
+    showFact(0);
+    requestAnimationFrame(tick);
+
+  </script>
+
+</body>
+</html>
