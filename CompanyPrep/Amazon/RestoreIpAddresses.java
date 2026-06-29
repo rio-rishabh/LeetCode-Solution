@@ -12,7 +12,7 @@ public class RestoreIpAddresses {
 
     public static List<String> restoreIpAddresses(String s){
         List<String> result = new ArrayList<>();
-        if(s.length() < 3 || s.length() > 12){return result;}
+        if(s.length() <= 3 || s.length() > 12){return result;}
 
         int n = s.length();
         for(int l1 = 1; l1 <=3; l1++){
