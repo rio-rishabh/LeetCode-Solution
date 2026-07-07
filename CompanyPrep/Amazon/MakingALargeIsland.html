@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LC 827 — Making A Large Island</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f1117;
+      color: #e6edf3;
+      padding: 24px;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 6px; }
+    .subtitle { color: #8b949e; margin-bottom: 20px; max-width: 960px; }
+    .panel {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .panel h2 { font-size: 1rem; margin-bottom: 12px; color: #58a6ff; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    select, textarea {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #e6edf3;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.82rem;
+    }
+    textarea { width: 100%; min-height: 72px; resize: vertical; }
+    button {
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+    }
+    button.secondary { background: #21262d; border: 1px solid #30363d; }
+    button.tab {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+    }
+    button.tab.active { background: #1c2128; border-color: #58a6ff; color: #58a6ff; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+    pre.code {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 0.74rem;
+      overflow-x: auto;
+      line-height: 1.42;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+    .code-line { display: block; padding: 1px 6px; border-radius: 3px; white-space: pre; }
+    .code-line.active { background: #2d1f12; border-left: 3px solid #f0883e; }
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .str { color: #a5d6ff; }
+    .cm { color: #8b949e; }
+    .num { color: #79c0ff; }
+    .explain {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 14px;
+      min-height: 140px;
+    }
+    .explain h3 { font-size: 0.9rem; color: #f0883e; margin-bottom: 8px; }
+    .explain p { font-size: 0.88rem; color: #c9d1d9; margin-bottom: 8px; }
+    .explain .why { color: #8b949e; font-size: 0.84rem; border-left: 3px solid #30363d; padding-left: 10px; }
+    .explain .formula {
+      font-family: ui-monospace, monospace;
+      background: #161b22;
+      padding: 8px 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+      font-size: 0.84rem;
+      color: #3fb950;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: #8b949e; margin: 8px 0; }
+    .meta strong { color: #e6edf3; }
+    .grid-wrap { overflow-x: auto; margin: 12px 0; }
+    .grid-table { border-collapse: separate; border-spacing: 4px; margin: 0 auto; }
+    .grid-table td {
+      width: 44px; height: 44px;
+      text-align: center;
+      vertical-align: middle;
+      border: 2px solid #30363d;
+      border-radius: 6px;
+      font-weight: 700;
+      font-family: ui-monospace, monospace;
+      font-size: 0.85rem;
+      position: relative;
+    }
+    .grid-table td .coord {
+      position: absolute; top: 2px; left: 4px;
+      font-size: 0.55rem; color: #8b949e; font-weight: 400;
+    }
+    .grid-table td.water { background: #0d1117; color: #484f58; }
+    .grid-table td.land { background: #122117; color: #3fb950; border-color: #3fb950; }
+    .grid-table td.flip { background: #2d1f12; color: #f0883e; border-color: #f0883e; box-shadow: 0 0 0 2px #f0883e; }
+    .grid-table td.current { box-shadow: 0 0 0 2px #58a6ff; }
+    .grid-table td.neighbor { box-shadow: 0 0 0 2px #d2a8ff; }
+    .grid-table td.header { border: none; background: transparent; color: #8b949e; font-size: 0.7rem; height: 24px; width: 44px; }
+    .island-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .legend-chip {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      border: 1px solid #30363d;
+    }
+    .side-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 800px) { .side-panels { grid-template-columns: 1fr; } }
+    .info-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 0.82rem;
+    }
+    .info-box h4 { color: #58a6ff; font-size: 0.82rem; margin-bottom: 6px; }
+    .log {
+      font-family: ui-monospace, monospace;
+      font-size: 0.76rem;
+      background: #0d1117;
+      padding: 10px;
+      border-radius: 6px;
+      max-height: 160px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #8b949e;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      margin-left: 6px;
+    }
+    .badge.p1 { background: #1c2128; color: #58a6ff; border: 1px solid #58a6ff; }
+    .badge.p2 { background: #2d1f12; color: #f0883e; border: 1px solid #f0883e; }
+    .badge.best { background: #122117; color: #3fb950; border: 1px solid #3fb950; }
+    .phase-bar {
+      height: 6px; border-radius: 3px; background: #21262d; margin: 8px 0;
+      overflow: hidden;
+    }
+    .phase-bar-fill { height: 100%; background: #58a6ff; transition: width 0.2s; }
+  </style>
+</head>
+<body>
+  <h1>LC 827 — Making A Large Island</h1>
+  <p class="subtitle">
+    Step through <strong>Phase 1</strong> (DFS label islands) and <strong>Phase 2</strong> (try flipping each <code>0</code>).
+    Each step highlights the active code line and explains <em>what</em> and <em>why</em> — including why we add <strong>+1</strong> for the flipped cell.
+  </p>
+
+  <div class="panel">
+    <h2>Controls</h2>
+    <div class="controls">
+      <label>Preset:
+        <select id="preset">
+          <option value="custom">Custom</option>
+          <option value="small1">2×2 → [[1,0],[0,1]] ans 3</option>
+          <option value="small2">2×2 → [[1,1],[1,0]] ans 4</option>
+          <option value="example" selected>7×7 (your example) ans 19</option>
+          <option value="all1">2×2 all 1s ans 4</option>
+        </select>
+      </label>
+      <button id="resetBtn">Reset</button>
+      <button id="stepBtn">Next step</button>
+      <button id="prevBtn" class="secondary">Prev step</button>
+      <button id="autoBtn" class="secondary">Auto play</button>
+    </div>
+    <div style="margin-top:10px">
+      <label>Grid (rows of 0/1, comma-separated):</label>
+      <textarea id="gridInput">0,0,0,0,0,0,0
+1,1,1,1,1,0,0
+0,1,0,0,1,0,0
+1,0,1,0,1,0,0
+0,1,0,0,1,0,0
+0,1,0,0,0,0,0
+0,1,1,1,1,1,0</textarea>
+    </div>
+    <div class="meta">
+      Step <strong id="stepNum">0</strong> / <strong id="totalSteps">0</strong>
+      &nbsp;|&nbsp; Phase: <strong id="phaseLabel">—</strong>
+      &nbsp;|&nbsp; Best so far: <strong id="bestSoFar">0</strong>
+      &nbsp;|&nbsp; Final answer: <strong id="finalAns">—</strong>
+    </div>
+    <div class="phase-bar"><div class="phase-bar-fill" id="phaseBar" style="width:0%"></div></div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Code (matches MakingALargeIsland.java)</h2>
+      <pre class="code" id="codeBlock"></pre>
+    </div>
+    <div class="panel">
+      <h2>What is happening now?</h2>
+      <div class="explain" id="explainBox">
+        <h3>Ready</h3>
+        <p>Click <strong>Next step</strong> to begin.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Grid visualization</h2>
+    <div class="island-legend" id="islandLegend"></div>
+    <div class="grid-wrap" id="gridWrap"></div>
+    <div class="side-panels">
+      <div class="info-box" id="islandSizesBox">
+        <h4>islandSize map</h4>
+        <div id="islandSizes">(empty)</div>
+      </div>
+      <div class="info-box" id="flipBox">
+        <h4>Current flip candidate</h4>
+        <div id="flipInfo">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Step log</h2>
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    const ISLAND_COLORS = {
+      0: { bg: "#0d1117", border: "#30363d", text: "#484f58" },
+      1: { bg: "#122117", border: "#3fb950", text: "#3fb950" },
+      2: { bg: "#1c2d4a", border: "#58a6ff", text: "#58a6ff" },
+      3: { bg: "#2d1f12", border: "#f0883e", text: "#f0883e" },
+      4: { bg: "#1f1229", border: "#d2a8ff", text: "#d2a8ff" },
+      5: { bg: "#12211c", border: "#39d353", text: "#39d353" },
+      6: { bg: "#2d1214", border: "#f85149", text: "#f85149" },
+      7: { bg: "#1c2128", border: "#79c0ff", text: "#79c0ff" },
+      8: { bg: "#21262d", border: "#8b949e", text: "#e6edf3" },
+    };
+
+    const CODE = [
+      { n: 1,  t: '<span class="kw">public static int</span> <span class="fn">largestIsland</span>(<span class="kw">int</span> grid[][]) {' },
+      { n: 2,  t: '    <span class="kw">int</span> n = grid.length;' },
+      { n: 3,  t: '    <span class="kw">int</span> islandId = <span class="num">2</span>;  <span class="cm">// IDs 2,3,4... (0=water, 1=unvisited land)</span>' },
+      { n: 4,  t: '    Map&lt;Integer, Integer&gt; islandSize = <span class="kw">new</span> HashMap&lt;&gt;();' },
+      { n: 5,  t: '    <span class="cm">// ── PHASE 1: label each island ──</span>' },
+      { n: 6,  t: '    <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; n; r++) {' },
+      { n: 7,  t: '        <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; grid[<span class="num">0</span>].length; c++) {' },
+      { n: 8,  t: '            <span class="kw">if</span> (grid[r][c] == <span class="num">1</span>) {' },
+      { n: 9,  t: '                <span class="kw">int</span> size = <span class="fn">dfs</span>(grid, r, c, islandId);' },
+      { n: 10, t: '                islandSize.put(islandId, size);' },
+      { n: 11, t: '                islandId++;' },
+      { n: 12, t: '            }' },
+      { n: 13, t: '        }' },
+      { n: 14, t: '    }' },
+      { n: 15, t: '    <span class="kw">if</span> (islandSize.isEmpty()) <span class="kw">return</span> n * n;  <span class="cm">// all water</span>' },
+      { n: 16, t: '    <span class="kw">int</span> maxArea = <span class="num">0</span>;' },
+      { n: 17, t: '    <span class="kw">for</span> (<span class="kw">int</span> size : islandSize.values())' },
+      { n: 18, t: '        maxArea = Math.max(maxArea, size);  <span class="cm">// best without flip</span>' },
+      { n: 19, t: '    <span class="cm">// ── PHASE 2: try flipping each 0 ──</span>' },
+      { n: 20, t: '    <span class="kw">int</span>[][] directions = {{<span class="num">1</span>,<span class="num">0</span>},{-<span class="num">1</span>,<span class="num">0</span>},{<span class="num">0</span>,<span class="num">1</span>},{<span class="num">0</span>,-<span class="num">1</span>}};' },
+      { n: 21, t: '    <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; n; r++) {' },
+      { n: 22, t: '        <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; n; c++) {' },
+      { n: 23, t: '            <span class="kw">if</span> (grid[r][c] != <span class="num">0</span>) <span class="kw">continue</span>;' },
+      { n: 24, t: '            Set&lt;Integer&gt; seen = <span class="kw">new</span> HashSet&lt;&gt;();' },
+      { n: 25, t: '            <span class="kw">for</span> (<span class="kw">int</span>[] dir : directions) {' },
+      { n: 26, t: '                <span class="kw">int</span> nr = r + dir[<span class="num">0</span>], nc = c + dir[<span class="num">1</span>];' },
+      { n: 27, t: '                <span class="kw">if</span> (inBounds && grid[nr][nc] &gt; <span class="num">1</span>) seen.add(grid[nr][nc]);' },
+      { n: 28, t: '            }' },
+      { n: 29, t: '            <span class="kw">int</span> candidate = <span class="num">1</span>;  <span class="cm">// +1 = the flipped cell itself!</span>' },
+      { n: 30, t: '            <span class="kw">for</span> (<span class="kw">int</span> id : seen)' },
+      { n: 31, t: '                candidate += islandSize.get(id);' },
+      { n: 32, t: '            maxArea = Math.max(maxArea, candidate);' },
+      { n: 33, t: '        }' },
+      { n: 34, t: '    }' },
+      { n: 35, t: '    <span class="kw">return</span> maxArea;' },
+      { n: 36, t: '}' },
+      { n: 37, t: '' },
+      { n: 38, t: '<span class="kw">private static int</span> <span class="fn">dfs</span>(<span class="kw">int</span> grid[][], <span class="kw">int</span> r, <span class="kw">int</span> c, <span class="kw">int</span> islandId) {' },
+      { n: 39, t: '    <span class="kw">if</span> (out of bounds || grid[r][c] != <span class="num">1</span>) <span class="kw">return</span> <span class="num">0</span>;' },
+      { n: 40, t: '    grid[r][c] = islandId;  <span class="cm">// mark with island ID</span>' },
+      { n: 41, t: '    <span class="kw">return</span> <span class="num">1</span> + dfs(4 neighbors);' },
+      { n: 42, t: '}' },
+    ];
+
+    const PRESETS = {
+      small1: [[1,0],[0,1]],
+      small2: [[1,1],[1,0]],
+      example: [
+        [0,0,0,0,0,0,0],[1,1,1,1,1,0,0],[0,1,0,0,1,0,0],
+        [1,0,1,0,1,0,0],[0,1,0,0,1,0,0],[0,1,0,0,0,0,0],[0,1,1,1,1,1,0]
+      ],
+      all1: [[1,1],[1,1]],
+    };
+
+    let steps = [];
+    let stepIndex = 0;
+    let autoTimer = null;
+
+    function parseGrid(text) {
+      const rows = text.trim().split(/\n/).map(r => r.trim()).filter(Boolean);
+      return rows.map(r => r.split(/[,\s]+/).map(Number));
+    }
+
+    function gridToText(g) {
+      return g.map(r => r.join(",")).join("\n");
+    }
+
+    function cloneGrid(g) {
+      return g.map(r => [...r]);
+    }
+
+    function colorFor(val) {
+      return ISLAND_COLORS[val] || ISLAND_COLORS[8];
+    }
+
+    function buildSteps(origGrid) {
+      const steps = [];
+      const grid = cloneGrid(origGrid);
+      const n = grid.length;
+      const islandSize = {};
+      let islandId = 2;
+      let maxArea = 0;
+      let bestFlip = null;
+
+      const snap = (partial) => ({
+        grid: cloneGrid(grid),
+        islandSize: { ...islandSize },
+        maxArea,
+        bestFlip: bestFlip ? { ...bestFlip } : null,
+        n,
+        ...partial,
+      });
+
+      steps.push(snap({
+        line: 1, phase: "intro",
+        title: "Start largestIsland",
+        text: `Given a ${n}×${n} grid. We may flip at most one 0 → 1. Return the largest island size.`,
+        why: "Two phases: (1) label every island with DFS, (2) try each water cell as a bridge.",
+      }));
+
+      // Phase 1
+      steps.push(snap({
+        line: 5, phase: "phase1",
+        title: "Phase 1 — label islands",
+        text: "Scan the grid. Each unvisited '1' starts a new island. DFS marks all connected land with the same island ID (2, 3, 4...).",
+        why: "We need island IDs and sizes before we can simulate merging across a flipped 0.",
+      }));
+
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          steps.push(snap({
+            line: 8, phase: "phase1", cur: [r, c],
+            title: `Scan (${r},${c})`,
+            text: `Check grid[${r}][${c}] = ${grid[r][c]}. ${grid[r][c] === 1 ? "Found unvisited land — start DFS!" : "Water or already labeled — skip."}`,
+            why: grid[r][c] === 1 ? "grid[r][c]==1 means this cell is land not yet assigned to an island." : "Not a new island start.",
+          }));
+
+          if (grid[r][c] !== 1) continue;
+
+          const startId = islandId;
+          steps.push(snap({
+            line: 9, phase: "phase1", cur: [r, c], activeId: startId,
+            title: `New island id=${startId} at (${r},${c})`,
+            text: `Call dfs(grid, ${r}, ${c}, ${startId}). This will flood-fill all 4-directionally connected '1's.`,
+            why: "Each separate connected component gets a unique ID starting at 2.",
+          }));
+
+          function dfs(r, c, id) {
+            if (r < 0 || c < 0 || r >= n || c >= n || grid[r][c] !== 1) {
+              return 0;
+            }
+            grid[r][c] = id;
+            steps.push(snap({
+              line: 40,
+              phase: "phase1",
+              cur: [r, c],
+              activeId: id,
+              title: `dfs: mark (${r},${c}) = id ${id}`,
+              text: `Paint cell (${r},${c}) with island ID ${id}. Then recurse to 4 neighbors.`,
+              why: "grid[r][c] = islandId replaces '1' so we don't visit this cell again.",
+            }));
+            return 1
+              + dfs(r + 1, c, id)
+              + dfs(r - 1, c, id)
+              + dfs(r, c + 1, id)
+              + dfs(r, c - 1, id);
+          }
+
+          const size = dfs(r, c, startId);
+          islandSize[startId] = size;
+          islandId++;
+
+          steps.push(snap({
+            line: 10, phase: "phase1", activeId: startId,
+            title: `Island ${startId} complete — size ${size}`,
+            text: `islandSize.put(${startId}, ${size}). Total land in this island = ${size} cells.`,
+            why: "DFS returned the count of cells in this connected component.",
+          }));
+        }
+      }
+
+      const sizes = Object.values(islandSize);
+      if (sizes.length === 0) {
+        steps.push(snap({
+          line: 15, phase: "done",
+          title: "No land — flip one cell",
+          text: "All water. Flip any single 0 → island of size 1.",
+          why: "islandSize is empty because no '1' was found in phase 1.",
+          maxArea: 1,
+        }));
+        return steps;
+      }
+
+      steps.push(snap({
+        line: 17, phase: "phase2",
+        title: "Record best without flipping",
+        text: `Largest existing island sizes: ${JSON.stringify(islandSize)}. maxArea = ${Math.max(...sizes)} (no flip yet).`,
+        why: "Maybe no 0 bridges anything — we still need this baseline.",
+      }));
+      maxArea = Math.max(...sizes);
+
+      steps.push(snap({
+        line: 19, phase: "phase2",
+        title: "Phase 2 — try each 0",
+        text: "For every water cell, pretend we flip it to 1. Collect unique island IDs among its 4 neighbors.",
+        why: "Flipping connects neighboring islands. Use a Set so the same island isn't counted twice.",
+      }));
+
+      const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+      for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          if (grid[r][c] !== 0) continue;
+
+          steps.push(snap({
+            line: 23, phase: "phase2", flip: [r, c],
+            title: `Try flip at (${r},${c})`,
+            text: `grid[${r}][${c}] is water (0). What if we flip it to land?`,
+            why: "We check every 0 — it might bridge one or more islands.",
+          }));
+
+          const seen = new Set();
+          const neighborCells = [];
+          for (const [dr, dc] of dirs) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nc >= 0 && nr < n && nc < n && grid[nr][nc] > 1) {
+              seen.add(grid[nr][nc]);
+              neighborCells.push([nr, nc, grid[nr][nc]]);
+            }
+          }
+
+          steps.push(snap({
+            line: 27, phase: "phase2", flip: [r, c], neighbors: neighborCells,
+            title: `Neighbors of (${r},${c})`,
+            text: seen.size
+              ? `Unique island IDs touching this 0: {${[...seen].join(", ")}}. Neighbor cells: ${neighborCells.map(([nr,nc,id]) => `(${nr},${nc})=id${id}`).join(", ")}`
+              : `No labeled islands adjacent. Flip creates an isolated island of size 1.`,
+            why: "Only cells with id > 1 are labeled islands. Water (0) neighbors don't add to the merge.",
+          }));
+
+          let candidate = 1;
+          const parts = ["1 (flipped cell)"];
+          for (const id of seen) {
+            candidate += islandSize[id];
+            parts.push(`${islandSize[id]} (island ${id})`);
+          }
+
+          steps.push(snap({
+            line: 29, phase: "phase2", flip: [r, c], seen: [...seen], candidate,
+            title: `candidate = ${candidate}`,
+            text: `candidate = ${parts.join(" + ")} = ${candidate}`,
+            why: "The +1 is the flipped cell itself! Existing land totals " + (candidate - 1) + " but we also count the new land at (" + r + "," + c + "). That's why 9+1+1+7=18 land + 1 flip = 19.",
+            formula: parts.join(" + ") + " = " + candidate,
+          }));
+
+          if (candidate > maxArea) {
+            maxArea = candidate;
+            bestFlip = { r, c, seen: [...seen], candidate };
+            steps.push(snap({
+              line: 32, phase: "phase2", flip: [r, c], seen: [...seen], candidate, isBest: true,
+              title: `New best! maxArea = ${maxArea}`,
+              text: `Flipping (${r},${c}) gives island size ${candidate} — new maximum.`,
+              why: "This 0 connects more land than any previous flip we tried.",
+              formula: parts.join(" + ") + " = " + candidate,
+            }));
+          } else {
+            steps.push(snap({
+              line: 32, phase: "phase2", flip: [r, c], seen: [...seen], candidate,
+              title: `maxArea stays ${maxArea}`,
+              text: `candidate ${candidate} ≤ current max ${maxArea}. Keep looking.`,
+              why: "Not every 0 produces the best bridge.",
+            }));
+          }
+        }
+      }
+
+      steps.push(snap({
+        line: 35, phase: "done",
+        title: "Done — return maxArea",
+        text: bestFlip
+          ? `Answer = ${maxArea}. Best flip at (${bestFlip.r},${bestFlip.c}) merges islands {${bestFlip.seen.join(",")}}.`
+          : `Answer = ${maxArea}.`,
+        why: "Return the largest island size achievable with at most one flip.",
+        maxArea,
+      }));
+
+      return steps;
+    }
+
+    function renderCode(line) {
+      document.getElementById("codeBlock").innerHTML = CODE.map(row => {
+        const cls = row.n === line ? "code-line active" : "code-line";
+        return `<span class="${cls}">${row.t}</span>`;
+      }).join("\n");
+    }
+
+    function renderGrid(step) {
+      const wrap = document.getElementById("gridWrap");
+      if (!step) { wrap.innerHTML = ""; return; }
+
+      const n = step.n;
+      const flip = step.flip;
+      const cur = step.cur;
+      const neighbors = step.neighbors || [];
+
+      let html = '<table class="grid-table"><tr><td class="header"></td>';
+      for (let c = 0; c < n; c++) html += `<td class="header">c${c}</td>`;
+      html += "</tr>";
+
+      for (let r = 0; r < n; r++) {
+        html += `<tr><td class="header">r${r}</td>`;
+        for (let c = 0; c < n; c++) {
+          const val = step.grid[r][c];
+          const col = colorFor(val);
+          let cls = val === 0 ? "water" : "land";
+          let style = `background:${col.bg};border-color:${col.border};color:${col.text};`;
+          if (flip && flip[0] === r && flip[1] === c) { cls = "flip"; style += "background:#2d1f12;border-color:#f0883e;color:#f0883e;"; }
+          if (cur && cur[0] === r && cur[1] === c) cls += " current";
+          if (neighbors.some(([nr, nc]) => nr === r && nc === c)) cls += " neighbor";
+          const label = val === 0 ? "0" : val === 1 ? "1" : val;
+          html += `<td class="${cls}" style="${style}"><span class="coord">${r},${c}</span>${label}</td>`;
+        }
+        html += "</tr>";
+      }
+      html += "</table>";
+      wrap.innerHTML = html;
+    }
+
+    function renderLegend(step) {
+      const el = document.getElementById("islandLegend");
+      if (!step || !step.islandSize) { el.innerHTML = ""; return; }
+      const ids = Object.keys(step.islandSize).map(Number).sort((a,b) => a-b);
+      el.innerHTML = ids.map(id => {
+        const col = colorFor(Number(id));
+        const sz = step.islandSize[id];
+        return `<span class="legend-chip" style="background:${col.bg};border-color:${col.border};color:${col.text}">Island ${id}: size ${sz}</span>`;
+      }).join("") + `<span class="legend-chip" style="background:#2d1f12;border-color:#f0883e;color:#f0883e">Flip cell</span>`;
+    }
+
+    function renderStep() {
+      const step = stepIndex > 0 ? steps[stepIndex - 1] : null;
+
+      document.getElementById("stepNum").textContent = stepIndex;
+      document.getElementById("totalSteps").textContent = steps.length;
+      document.getElementById("phaseLabel").textContent = step ? step.phase : "—";
+      document.getElementById("bestSoFar").textContent = step ? step.maxArea : "0";
+      document.getElementById("finalAns").textContent = step && step.phase === "done" ? step.maxArea : "—";
+      document.getElementById("phaseBar").style.width = steps.length ? (stepIndex / steps.length * 100) + "%" : "0%";
+
+      if (!step) {
+        document.getElementById("explainBox").innerHTML = "<h3>Ready</h3><p>Click <strong>Next step</strong>.</p>";
+        renderCode(-1);
+        renderGrid(null);
+        renderLegend(null);
+        document.getElementById("islandSizes").textContent = "(empty)";
+        document.getElementById("flipInfo").textContent = "—";
+        return;
+      }
+
+      renderCode(step.line);
+
+      let badge = "";
+      if (step.phase === "phase1") badge = '<span class="badge p1">PHASE 1</span>';
+      if (step.phase === "phase2") badge = '<span class="badge p2">PHASE 2</span>';
+      if (step.isBest) badge += '<span class="badge best">NEW BEST</span>';
+
+      let html = `<h3>${step.title}${badge}</h3><p>${step.text}</p><div class="why"><strong>Why:</strong> ${step.why}</div>`;
+      if (step.formula) html += `<div class="formula">${step.formula}</div>`;
+      document.getElementById("explainBox").innerHTML = html;
+
+      renderGrid(step);
+      renderLegend(step);
+
+      const sizes = step.islandSize;
+      document.getElementById("islandSizes").innerHTML = Object.keys(sizes).length
+        ? Object.entries(sizes).map(([k,v]) => `<div>island <strong>${k}</strong> → size <strong>${v}</strong></div>`).join("")
+        : "(no land labeled yet)";
+
+      if (step.flip) {
+        document.getElementById("flipInfo").innerHTML =
+          `Flip <strong>(${step.flip[0]},${step.flip[1]})</strong><br>` +
+          (step.seen ? `Merges islands: {${step.seen.join(", ")}}<br>candidate: <strong>${step.candidate}</strong>` : "Checking neighbors...");
+      } else if (step.activeId) {
+        document.getElementById("flipInfo").innerHTML = `Labeling island <strong>${step.activeId}</strong>`;
+      } else {
+        document.getElementById("flipInfo").textContent = "—";
+      }
+    }
+
+    function rebuildLog(upTo) {
+      const logEl = document.getElementById("log");
+      logEl.textContent = "";
+      for (let i = 1; i <= upTo; i++) {
+        const s = steps[i - 1];
+        logEl.textContent += (i > 1 ? "\n" : "") + `Step ${i}: [${s.phase}] ${s.title}`;
+      }
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function reset() {
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; document.getElementById("autoBtn").textContent = "Auto play"; }
+      const preset = document.getElementById("preset").value;
+      if (preset !== "custom" && PRESETS[preset]) {
+        document.getElementById("gridInput").value = gridToText(PRESETS[preset]);
+      }
+      const grid = parseGrid(document.getElementById("gridInput").value);
+      if (!grid.length || grid.some(r => r.length !== grid.length)) {
+        alert("Grid must be square (n×n), same number of columns per row.");
+        return;
+      }
+      steps = buildSteps(grid);
+      stepIndex = 0;
+      document.getElementById("log").textContent = "";
+      renderStep();
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", reset);
+    document.getElementById("stepBtn").addEventListener("click", () => {
+      if (stepIndex < steps.length) {
+        stepIndex++;
+        renderStep();
+        rebuildLog(stepIndex);
+      }
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+        rebuildLog(stepIndex);
+      }
+    });
+    document.getElementById("autoBtn").addEventListener("click", () => {
+      if (autoTimer) {
+        clearInterval(autoTimer); autoTimer = null;
+        document.getElementById("autoBtn").textContent = "Auto play";
+        return;
+      }
+      document.getElementById("autoBtn").textContent = "Stop";
+      autoTimer = setInterval(() => {
+        if (stepIndex >= steps.length) {
+          clearInterval(autoTimer); autoTimer = null;
+          document.getElementById("autoBtn").textContent = "Auto play";
+          return;
+        }
+        stepIndex++;
+        renderStep();
+        rebuildLog(stepIndex);
+      }, 900);
+    });
+    document.getElementById("preset").addEventListener("change", () => {
+      const p = document.getElementById("preset").value;
+      if (p !== "custom" && PRESETS[p]) {
+        document.getElementById("gridInput").value = gridToText(PRESETS[p]);
+        reset();
+      }
+    });
+
+    reset();
+  </script>
+</body>
+</html>
