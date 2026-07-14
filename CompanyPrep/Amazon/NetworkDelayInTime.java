@@ -24,3 +24,6 @@ public class NetworkDelayInTime {
         int dist[] = new int[n+ 1];
     }
 }
+
+
+
