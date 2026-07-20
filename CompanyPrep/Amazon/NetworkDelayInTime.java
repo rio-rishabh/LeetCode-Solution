@@ -33,3 +33,16 @@ public class NetworkDelayInTime {
 
 
 
+
+    public static void dijkstra(List<List<int[]>> adj, int dist[]){
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[] {k, 0});
+        dist[k] = 0;
+        while(!pq.isEmpty()){
+            int[] current = pq.poll();
+            int node = current[0];
+            int distance = current[1];
+        }
+    }
+
+
