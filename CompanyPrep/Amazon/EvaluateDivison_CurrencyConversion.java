@@ -50,7 +50,7 @@ public class EvaluateDivison_CurrencyConversion {
         if(a.equals(b)) return acc;
         seen.add(a);
 
-        for( var e : graph.get(a).entrySet()){
+        for( Map.Entry<String, Double> e : graph.get(a).entrySet()){
             if(seen.contains(e.getKey())) continue;
 
             double res = dfs(e.getKey(), b, graph, seen, acc * e.getValue());
