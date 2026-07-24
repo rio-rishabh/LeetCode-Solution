@@ -1,4 +1,4 @@
-package CompanyPrep.Amazon;
+8package CompanyPrep.Amazon;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,5 +59,3 @@ public class EvaluateDivison_CurrencyConversion {
         return -1.0;
     }
 }
-
-
