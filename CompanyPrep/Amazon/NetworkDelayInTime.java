@@ -25,15 +25,3 @@ public class NetworkDelayInTime {
     }
 }
 
-
-
-
-
-
-
-
-
-
-    public static void dijkstra(List<List<int[]>> adj, int dist[]){
-
-
