@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LC 787 — Cheapest Flights Within K Stops · Code Steps</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f1117;
+      color: #e6edf3;
+      padding: 24px;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 6px; }
+    .subtitle { color: #8b949e; margin-bottom: 20px; max-width: 980px; }
+    .panel {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .panel h2 { font-size: 1rem; margin-bottom: 12px; color: #58a6ff; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    select, textarea, input {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #e6edf3;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.82rem;
+    }
+    textarea { width: 100%; min-height: 72px; resize: vertical; }
+    input[type=number] { width: 64px; }
+    button {
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+    }
+    button.secondary { background: #21262d; border: 1px solid #30363d; }
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+    pre.code {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 0.72rem;
+      overflow-x: auto;
+      line-height: 1.42;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      max-height: 560px;
+      overflow-y: auto;
+    }
+    .code-line { display: block; padding: 1px 6px; border-radius: 3px; white-space: pre; }
+    .code-line.active { background: #2d1f12; border-left: 3px solid #f0883e; }
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .cm { color: #8b949e; }
+    .num { color: #79c0ff; }
+    .explain {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 14px;
+      min-height: 140px;
+    }
+    .explain h3 { font-size: 0.9rem; color: #f0883e; margin-bottom: 8px; }
+    .explain p { font-size: 0.88rem; color: #c9d1d9; margin-bottom: 8px; }
+    .explain .why { color: #8b949e; font-size: 0.84rem; border-left: 3px solid #30363d; padding-left: 10px; }
+    .explain .formula {
+      font-family: ui-monospace, monospace;
+      background: #161b22;
+      padding: 8px 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+      font-size: 0.84rem;
+      color: #3fb950;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: #8b949e; margin: 8px 0; }
+    .meta strong { color: #e6edf3; }
+    .side-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 800px) { .side-panels { grid-template-columns: 1fr; } }
+    .info-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 0.82rem;
+    }
+    .info-box h4 { color: #58a6ff; font-size: 0.82rem; margin-bottom: 6px; }
+    .log {
+      font-family: ui-monospace, monospace;
+      font-size: 0.76rem;
+      background: #0d1117;
+      padding: 10px;
+      border-radius: 6px;
+      max-height: 160px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #8b949e;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      margin-left: 6px;
+    }
+    .badge.build { background: #1c2128; color: #58a6ff; border: 1px solid #58a6ff; }
+    .badge.round { background: #2d1f12; color: #f0883e; border: 1px solid #f0883e; }
+    .badge.relax { background: #1f1229; color: #d2a8ff; border: 1px solid #d2a8ff; }
+    .badge.skip { background: #2d1214; color: #f85149; border: 1px solid #f85149; }
+    .badge.done { background: #122117; color: #3fb950; border: 1px solid #3fb950; }
+    .phase-bar { height: 6px; border-radius: 3px; background: #21262d; margin: 8px 0; overflow: hidden; }
+    .phase-bar-fill { height: 100%; background: #58a6ff; transition: width 0.2s; }
+    .warn {
+      background: #2d1f12;
+      border: 1px solid #f0883e;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.84rem;
+      color: #f0883e;
+      margin-bottom: 16px;
+    }
+    .tip {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.84rem;
+      color: #8b949e;
+      margin-bottom: 16px;
+    }
+    .tip strong { color: #58a6ff; }
+    .graph-svg { width: 100%; max-width: 560px; display: block; margin: 0 auto; }
+    .dist-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: ui-monospace, monospace;
+      font-size: 0.82rem;
+      margin-top: 8px;
+    }
+    .dist-table th, .dist-table td {
+      border: 1px solid #30363d;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .dist-table th { color: #8b949e; background: #0d1117; }
+    .dist-table td.updated { background: #1f1229; color: #d2a8ff; font-weight: 700; }
+    .dist-table td.src { color: #f0883e; font-weight: 700; }
+    .dist-table td.dst { color: #3fb950; font-weight: 700; }
+    .dist-table td.inf { color: #f85149; }
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .input-grid { grid-template-columns: 1fr; } }
+    .input-grid label { display: block; font-size: 0.82rem; color: #8b949e; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <h1>LC 787 — Cheapest Flights <span style="color:#8b949e;font-weight:400">(Code Steps)</span></h1>
+  <p class="subtitle">
+    Line-by-line Bellman-Ford walkthrough for interview prep. Highlighted code is the reference shape —
+    <strong>write the Java yourself</strong>. For the no-code intuition, open <code>CheapestFlights_Concept.html</code>.
+  </p>
+
+  <div class="warn">
+    <strong>Must copy prices each round.</strong>
+    Relax using <code>prev[u] + w</code>, not live <code>prices[u]</code>, or one loop can chain many edges and break the k-stop limit.
+    Loop count = <code>k + 1</code> (max flights).
+  </div>
+
+  <div class="tip">
+    <strong>Say while coding:</strong> “Round i = cheapest with ≤ i flights. After k+1 rounds, prices[dst] is the answer.”
+  </div>
+
+  <div class="panel">
+    <h2>Controls</h2>
+    <div class="controls">
+      <label>Preset:
+        <select id="preset">
+          <option value="custom">Custom</option>
+          <option value="lc1" selected>LC ex1 — ans 700</option>
+          <option value="lc2">LC ex2 — ans 200</option>
+          <option value="lc3">LC ex3 — ans 500 (k=0)</option>
+        </select>
+      </label>
+      <label>n: <input type="number" id="nInput" value="4" min="2" /></label>
+      <label>src: <input type="number" id="srcInput" value="0" min="0" /></label>
+      <label>dst: <input type="number" id="dstInput" value="3" min="0" /></label>
+      <label>k: <input type="number" id="kInput" value="1" min="0" /></label>
+      <button id="resetBtn">Reset</button>
+      <button id="stepBtn">Next step</button>
+      <button id="prevBtn" class="secondary">Prev step</button>
+      <button id="autoBtn" class="secondary">Auto play</button>
+    </div>
+    <div class="input-grid">
+      <div>
+        <label>Flights (one per line: from,to,price)</label>
+        <textarea id="flightInput">0,1,100
+1,2,100
+2,0,100
+1,3,600
+2,3,200</textarea>
+      </div>
+    </div>
+    <div class="meta">
+      Step <strong id="stepNum">0</strong> / <strong id="totalSteps">0</strong>
+      &nbsp;|&nbsp; Phase: <strong id="phaseLabel">—</strong>
+      &nbsp;|&nbsp; Answer: <strong id="finalAns">—</strong>
+    </div>
+    <div class="phase-bar"><div class="phase-bar-fill" id="phaseBar" style="width:0%"></div></div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Code shape (write this yourself in Java)</h2>
+      <pre class="code" id="codeBlock"></pre>
+    </div>
+    <div class="panel">
+      <h2>What is happening now?</h2>
+      <div class="explain" id="explainBox">
+        <h3>Ready</h3>
+        <p>Click <strong>Next step</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Graph + prices</h2>
+    <svg class="graph-svg" id="graphSvg" viewBox="0 0 520 300"></svg>
+    <div class="side-panels">
+      <div class="info-box">
+        <h4>prices[] (live)</h4>
+        <div id="priceWrap"></div>
+      </div>
+      <div class="info-box">
+        <h4>prev[] (frozen this round)</h4>
+        <div id="prevWrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Step log</h2>
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    const INF = 1e9;
+    const CODE = [
+      { n: 1,  t: '<span class="kw">public int</span> <span class="fn">findCheapestPrice</span>(<span class="kw">int</span> n, <span class="kw">int</span>[][] flights,' },
+      { n: 2,  t: '                              <span class="kw">int</span> src, <span class="kw">int</span> dst, <span class="kw">int</span> k) {' },
+      { n: 3,  t: '    <span class="kw">int</span>[] prices = <span class="kw">new int</span>[n];' },
+      { n: 4,  t: '    Arrays.fill(prices, Integer.MAX_VALUE);' },
+      { n: 5,  t: '    prices[src] = <span class="num">0</span>;' },
+      { n: 6,  t: '' },
+      { n: 7,  t: '    <span class="cm">// k stops ⇒ at most k+1 flights</span>' },
+      { n: 8,  t: '    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt;= k; i++) {' },
+      { n: 9,  t: '        <span class="kw">int</span>[] prev = Arrays.copyOf(prices, n);  <span class="cm">// freeze</span>' },
+      { n: 10, t: '        <span class="kw">for</span> (<span class="kw">int</span>[] f : flights) {' },
+      { n: 11, t: '            <span class="kw">int</span> u = f[<span class="num">0</span>], v = f[<span class="num">1</span>], w = f[<span class="num">2</span>];' },
+      { n: 12, t: '            <span class="kw">if</span> (prev[u] == Integer.MAX_VALUE) <span class="kw">continue</span>;' },
+      { n: 13, t: '            <span class="kw">if</span> (prev[u] + w &lt; prices[v]) {' },
+      { n: 14, t: '                prices[v] = prev[u] + w;  <span class="cm">// one more flight</span>' },
+      { n: 15, t: '            }' },
+      { n: 16, t: '        }' },
+      { n: 17, t: '    }' },
+      { n: 18, t: '    <span class="kw">return</span> prices[dst] == Integer.MAX_VALUE ? -<span class="num">1</span> : prices[dst];' },
+      { n: 19, t: '}' },
+    ];
+
+    const PRESETS = {
+      lc1: {
+        n: 4, src: 0, dst: 3, k: 1,
+        flights: [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]],
+      },
+      lc2: {
+        n: 3, src: 0, dst: 2, k: 1,
+        flights: [[0,1,100],[1,2,100],[0,2,500]],
+      },
+      lc3: {
+        n: 3, src: 0, dst: 2, k: 0,
+        flights: [[0,1,100],[1,2,100],[0,2,500]],
+      },
+    };
+
+    let steps = [];
+    let stepIndex = 0;
+    let autoTimer = null;
+
+    function parseFlights(text) {
+      return text.trim().split(/\n/).map(line => {
+        const p = line.trim().split(/[,\s]+/).map(Number);
+        if (p.length < 3 || p.some(Number.isNaN)) return null;
+        return [p[0], p[1], p[2]];
+      }).filter(Boolean);
+    }
+
+    function flightsToText(flights) {
+      return flights.map(f => f.join(",")).join("\n");
+    }
+
+    function fmt(v) { return v >= INF ? "∞" : String(v); }
+
+    function buildSteps(n, flights, src, dst, k) {
+      const out = [];
+      let prices = Array(n).fill(INF);
+      prices[src] = 0;
+
+      function snap(partial) {
+        return {
+          n, src, dst, k,
+          flights: flights.map(f => [...f]),
+          prices: [...prices],
+          ...partial,
+        };
+      }
+
+      out.push(snap({
+        line: 1, phase: "intro",
+        title: "findCheapestPrice",
+        text: "n=" + n + ", src=" + src + ", dst=" + dst + ", k=" + k + " → allow ≤ " + (k + 1) + " flights.",
+        why: "Bellman-Ford layered by edge count matches the stop constraint.",
+        round: 0, active: null, updated: null, prev: null,
+      }));
+
+      out.push(snap({
+        line: 4, phase: "init",
+        title: "Fill prices with INF",
+        text: "All cities start unreachable.",
+        why: "Only src will be 0 initially.",
+        round: 0, active: null, updated: null, prev: null,
+      }));
+
+      out.push(snap({
+        line: 5, phase: "init",
+        title: "prices[src] = 0",
+        text: "Cost at source with 0 flights is 0.",
+        why: "Base case for relaxation.",
+        round: 0, active: null, updated: src, prev: null,
+      }));
+
+      for (let round = 0; round <= k; round++) {
+        const prev = [...prices];
+
+        out.push(snap({
+          line: 8, phase: "round",
+          title: "for i = " + round + "  (round " + (round + 1) + " / " + (k + 1) + ")",
+          text: "Outer loop iteration. After this round, prices reflect ≤ " + (round + 1) + " flights.",
+          why: "i goes 0..k inclusive → exactly k+1 relax passes.",
+          round: round + 1, active: null, updated: null, prev: [...prev],
+        }));
+
+        out.push(snap({
+          line: 9, phase: "round",
+          title: "prev = copyOf(prices)",
+          text: "Freeze snapshot. All relaxations this round read from prev only.",
+          why: "Prevents chaining multiple new edges in one iteration (would violate k).",
+          round: round + 1, active: null, updated: null, prev: [...prev],
+        }));
+
+        for (const [u, v, w] of flights) {
+          out.push(snap({
+            line: 11, phase: "edge",
+            title: "Consider flight " + u + " → " + v + " (w=" + w + ")",
+            text: "Read u,v,w from flights array.",
+            why: "Try extending any known path ending at u by one flight.",
+            round: round + 1, active: [u, v, w], updated: null, prev: [...prev],
+          }));
+
+          if (prev[u] >= INF) {
+            out.push(snap({
+              line: 12, phase: "skip",
+              title: "continue — prev[u] is INF",
+              text: "City " + u + " not reachable in previous layer. Skip.",
+              why: "Cannot depart from an unreachable city.",
+              round: round + 1, active: [u, v, w], updated: null, prev: [...prev],
+            }));
+            continue;
+          }
+
+          const cand = prev[u] + w;
+          if (cand < prices[v]) {
+            prices[v] = cand;
+            out.push(snap({
+              line: 14, phase: "relax",
+              title: "prices[v] = prev[u] + w",
+              text: "prev[" + u + "]=" + prev[u] + " + " + w + " = " + cand + " improves prices[" + v + "].",
+              why: "Cheaper arrival at v using one additional flight from the frozen layer.",
+              round: round + 1, active: [u, v, w], updated: v, prev: [...prev],
+            }));
+          } else {
+            out.push(snap({
+              line: 13, phase: "skip",
+              title: "No improvement",
+              text: "prev[" + u + "]+" + w + "=" + cand + " ≥ prices[" + v + "]=" + fmt(prices[v]) + ".",
+              why: "Keep the better known cost.",
+              round: round + 1, active: [u, v, w], updated: null, prev: [...prev],
+            }));
+          }
+        }
+      }
+
+      const ans = prices[dst] >= INF ? -1 : prices[dst];
+      out.push(snap({
+        line: 18, phase: "done",
+        title: "return " + ans,
+        text: ans === -1
+          ? "prices[dst] still INF → impossible within k stops."
+          : "prices[dst]=" + ans + " is cheapest within k stops.",
+        why: "After k+1 edge layers, stop constraint is fully applied.",
+        round: k + 1, active: null, updated: dst, prev: null, answer: ans, isDone: true,
+      }));
+
+      return out;
+    }
+
+    function nodePos(n) {
+      const cx = 260, cy = 140, r = 105;
+      const pos = {};
+      for (let i = 0; i < n; i++) {
+        const a = (2 * Math.PI * i) / n - Math.PI / 2;
+        pos[i] = { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+      }
+      return pos;
+    }
+
+    function renderGraph(step) {
+      const svg = document.getElementById("graphSvg");
+      if (!step) { svg.innerHTML = ""; return; }
+      const pos = nodePos(step.n);
+      let html = '<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8b949e"/></marker><marker id="arrA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d2a8ff"/></marker></defs>';
+
+      for (const [u, v, w] of step.flights) {
+        const p1 = pos[u], p2 = pos[v];
+        const dx = p2.x - p1.x, dy = p2.y - p1.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const ux = dx / len, uy = dy / len;
+        const x1 = p1.x + ux * 26, y1 = p1.y + uy * 26;
+        const x2 = p2.x - ux * 26, y2 = p2.y - uy * 26;
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        const active = step.active && step.active[0] === u && step.active[1] === v;
+        html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+          '" stroke="' + (active ? "#d2a8ff" : "#30363d") + '" stroke-width="' + (active ? 3 : 1.5) +
+          '" marker-end="url(#' + (active ? "arrA" : "arr") + ')"/>';
+        html += '<text x="' + mx + '" y="' + (my - 6) + '" fill="' + (active ? "#d2a8ff" : "#8b949e") +
+          '" font-size="11" text-anchor="middle" font-family="monospace">' + w + "</text>";
+      }
+
+      for (let i = 0; i < step.n; i++) {
+        const p = pos[i];
+        let fill = "#161b22", stroke = "#30363d", sw = 2;
+        if (i === step.src) { fill = "#2d1f12"; stroke = "#f0883e"; }
+        if (i === step.dst) { stroke = "#3fb950"; sw = 3; }
+        if (i === step.updated) { fill = "#1f1229"; stroke = "#d2a8ff"; sw = 3; }
+        html += '<circle cx="' + p.x + '" cy="' + p.y + '" r="24" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>';
+        html += '<text x="' + p.x + '" y="' + (p.y + 5) + '" fill="#e6edf3" font-size="14" font-weight="700" text-anchor="middle" font-family="monospace">' + i + "</text>";
+        html += '<text x="' + p.x + '" y="' + (p.y + 40) + '" fill="#8b949e" font-size="10" text-anchor="middle" font-family="monospace">$' + fmt(step.prices[i]) + "</text>";
+      }
+      svg.innerHTML = html;
+    }
+
+    function renderPriceTable(arr, highlight, src, dst, updated) {
+      if (!arr) return '<span style="color:#484f58">—</span>';
+      let html = '<table class="dist-table"><tr>';
+      for (let i = 0; i < arr.length; i++) html += "<th>" + i + "</th>";
+      html += "</tr><tr>";
+      for (let i = 0; i < arr.length; i++) {
+        let cls = "";
+        if (i === src) cls = "src";
+        if (i === dst) cls = "dst";
+        if (highlight && i === updated) cls = "updated";
+        if (arr[i] >= INF) cls += " inf";
+        html += '<td class="' + cls.trim() + '">' + fmt(arr[i]) + "</td>";
+      }
+      html += "</tr></table>";
+      return html;
+    }
+
+    function renderCode(line) {
+      document.getElementById("codeBlock").innerHTML = CODE.map(row => {
+        const cls = row.n === line ? "code-line active" : "code-line";
+        return '<span class="' + cls + '">' + (row.t || " ") + "</span>";
+      }).join("\n");
+    }
+
+    function renderStep() {
+      const step = stepIndex > 0 ? steps[stepIndex - 1] : null;
+      document.getElementById("stepNum").textContent = stepIndex;
+      document.getElementById("totalSteps").textContent = steps.length;
+      document.getElementById("phaseLabel").textContent = step ? step.phase : "—";
+      document.getElementById("finalAns").textContent =
+        step && step.answer != null ? step.answer : "—";
+      document.getElementById("phaseBar").style.width =
+        steps.length ? (stepIndex / steps.length * 100) + "%" : "0%";
+
+      if (!step) {
+        document.getElementById("explainBox").innerHTML =
+          "<h3>Ready</h3><p>Click <strong>Next step</strong>.</p>";
+        renderCode(-1);
+        renderGraph(null);
+        document.getElementById("priceWrap").innerHTML = "—";
+        document.getElementById("prevWrap").innerHTML = "—";
+        return;
+      }
+
+      renderCode(step.line);
+
+      let badge = "";
+      if (step.phase === "intro" || step.phase === "init") badge = '<span class="badge build">SETUP</span>';
+      if (step.phase === "round" || step.phase === "edge") badge = '<span class="badge round">ROUND</span>';
+      if (step.phase === "relax") badge = '<span class="badge relax">RELAX</span>';
+      if (step.phase === "skip") badge = '<span class="badge skip">SKIP</span>';
+      if (step.isDone) badge += '<span class="badge done">ANSWER</span>';
+
+      document.getElementById("explainBox").innerHTML =
+        "<h3>" + step.title + badge + "</h3>" +
+        "<p>" + step.text + "</p>" +
+        '<div class="why"><strong>Why:</strong> ' + step.why + "</div>" +
+        (step.answer != null ? '<div class="formula">return ' + step.answer + ';</div>' : "");
+
+      renderGraph(step);
+      document.getElementById("priceWrap").innerHTML =
+        renderPriceTable(step.prices, true, step.src, step.dst, step.updated);
+      document.getElementById("prevWrap").innerHTML =
+        renderPriceTable(step.prev, false, step.src, step.dst, null);
+    }
+
+    function rebuildLog(upTo) {
+      const logEl = document.getElementById("log");
+      logEl.textContent = "";
+      for (let i = 1; i <= upTo; i++) {
+        const s = steps[i - 1];
+        logEl.textContent += (i > 1 ? "\n" : "") + "Step " + i + ": [" + s.phase + "] " + s.title;
+      }
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function reset() {
+      if (autoTimer) {
+        clearInterval(autoTimer); autoTimer = null;
+        document.getElementById("autoBtn").textContent = "Auto play";
+      }
+      const preset = document.getElementById("preset").value;
+      if (preset !== "custom" && PRESETS[preset]) {
+        const p = PRESETS[preset];
+        document.getElementById("nInput").value = p.n;
+        document.getElementById("srcInput").value = p.src;
+        document.getElementById("dstInput").value = p.dst;
+        document.getElementById("kInput").value = p.k;
+        document.getElementById("flightInput").value = flightsToText(p.flights);
+      }
+      const n = parseInt(document.getElementById("nInput").value, 10);
+      const src = parseInt(document.getElementById("srcInput").value, 10);
+      const dst = parseInt(document.getElementById("dstInput").value, 10);
+      const k = parseInt(document.getElementById("kInput").value, 10);
+      const flights = parseFlights(document.getElementById("flightInput").value);
+      if (!flights.length || n < 2 || src < 0 || dst < 0 || src >= n || dst >= n || k < 0) {
+        alert("Need valid n, src, dst, k, and flights.");
+        return;
+      }
+      steps = buildSteps(n, flights, src, dst, k);
+      stepIndex = 0;
+      document.getElementById("log").textContent = "";
+      renderStep();
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", reset);
+    document.getElementById("stepBtn").addEventListener("click", () => {
+      if (stepIndex < steps.length) { stepIndex++; renderStep(); rebuildLog(stepIndex); }
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (stepIndex > 0) { stepIndex--; renderStep(); rebuildLog(stepIndex); }
+    });
+    document.getElementById("autoBtn").addEventListener("click", () => {
+      if (autoTimer) {
+        clearInterval(autoTimer); autoTimer = null;
+        document.getElementById("autoBtn").textContent = "Auto play";
+        return;
+      }
+      document.getElementById("autoBtn").textContent = "Stop";
+      autoTimer = setInterval(() => {
+        if (stepIndex >= steps.length) {
+          clearInterval(autoTimer); autoTimer = null;
+          document.getElementById("autoBtn").textContent = "Auto play";
+          return;
+        }
+        stepIndex++;
+        renderStep();
+        rebuildLog(stepIndex);
+      }, 800);
+    });
+    document.getElementById("preset").addEventListener("change", () => {
+      if (document.getElementById("preset").value !== "custom") reset();
+    });
+
+    reset();
+  </script>
+</body>
+</html>
