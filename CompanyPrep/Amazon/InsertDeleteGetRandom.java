@@ -51,6 +51,5 @@ public class InsertDeleteGetRandom {
             return nums.get(random.nextInt(nums.size()));
         }
     }
-
-
 }
+
