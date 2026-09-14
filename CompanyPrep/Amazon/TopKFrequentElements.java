@@ -6,5 +6,7 @@ public class TopKFrequentElements {
         int k = 2;
         System.out.println(topKFrequent(nums, k));
     }
-    public static int[] topKFrequent(int[] nums, int k) {}
+    public static int[] topKFrequent(int[] nums, int k) {
+        
+    }
 }
