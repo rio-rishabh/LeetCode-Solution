@@ -6,6 +6,15 @@ public class TopKFrequentElements {
         int k = 2;
         System.out.println(topKFrequent(nums, k));
     }
-    public static int[] topKFrequent(int[] nums, int k) {
+    public static int[] topKFrequent(int[] nums, int k) { 
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int num : nums){
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> map.get(b) - map.get(a));
+        for(int num : map.keySet()){
+            pq.add(num);
+        }
+        int[] result = new int[k];
     }
 }
