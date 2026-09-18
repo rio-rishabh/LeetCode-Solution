@@ -1,5 +1,7 @@
 package CompanyPrep.Amazon;
 
+import java.util.HashMap;
+import java.util.PriorityQueue;
 public class TopKFrequentElements {
     public static void main(String args[]){
         int nums[] = {1,1,1,2,2,3};
