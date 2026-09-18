@@ -16,5 +16,9 @@ public class TopKFrequentElements {
             pq.add(num);
         }
         int[] result = new int[k];
+        for(int i = 0; i < k; i++){
+            result[i] = pq.poll();
+        }
+        return result;
     }
 }
