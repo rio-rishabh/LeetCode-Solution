@@ -23,5 +23,3 @@ public class ContainerWithMostWater {
         System.out.println("Maximum area is: " + maxArea);
     }
 }
-
-
