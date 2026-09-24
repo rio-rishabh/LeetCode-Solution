@@ -24,5 +24,3 @@ public class TopKFrequentElements {
         return result;
     }
 }
-
-
