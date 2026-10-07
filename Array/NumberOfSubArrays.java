@@ -30,3 +30,6 @@ public class NumberOfSubArrays {
         System.out.println("Number of subarrays is: " + count);
     }
 }
+
+
+
