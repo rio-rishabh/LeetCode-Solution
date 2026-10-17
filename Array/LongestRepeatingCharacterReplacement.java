@@ -29,3 +29,5 @@ public class LongestRepeatingCharacterReplacement {
         System.out.println("Longest repeating character replacement is: " + maxLength);
     }
 }
+
+
