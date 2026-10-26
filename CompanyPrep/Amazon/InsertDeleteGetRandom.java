@@ -52,3 +52,8 @@ public class InsertDeleteGetRandom {
         }
     }
 }
+
+
+
+// Time Complexity: O(1) for all operations
+// Space Complexity: O(n) for the hashmap and list
