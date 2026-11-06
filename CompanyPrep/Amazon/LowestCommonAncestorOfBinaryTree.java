@@ -39,7 +39,3 @@ public class LowestCommonAncestorOfBinaryTree {
         return left != null ? left : right;
     }
 }
-
-
-
-
