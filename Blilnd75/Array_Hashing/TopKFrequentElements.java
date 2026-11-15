@@ -28,3 +28,8 @@ public class TopKFrequentElements {
     }
 
 }
+
+/**
+ * Time Complexity: O(nlogn) because we are using a priority queue to store the elements and the priority queue is a binary heap.
+ * Space Complexity: O(n) because we are using a map to store the elements and the priority queue is a binary heap.
+ */
