@@ -50,3 +50,9 @@ public class GroupAnagram {
        return new ArrayList<>(map.values());
     }
 }
+
+
+/*
+ * Time Complexity: O(n*k) since we are iterating through each string and there are n strings.
+ * Space Complexity: O(n*k) since we are storing each string in the map.
+ */
